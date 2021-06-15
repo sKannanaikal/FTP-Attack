@@ -35,6 +35,22 @@ def loginBruteForce(host, credentials):
     print("[-] Failed to Brute Force into FTP Server")
     return None
 
+def directoryListing(ftpConnection):
+    try:
+        directory = ftpConnection.nlist()
+
+    except:
+        directory = []
+        print("[-] Unable to List Directory")
+
+    webFiles = []
+    for file in directory:
+        if file.split('.')[1] == '.php' or file.split('.')[1] == '.htm' or file.split('.')[1] == '.html' or file.split('.')[1] == '.asp':
+            webFiles.append(file)
+
+    return webFiles
+
+
 def main():
     command = optparse.OptionParser('usage%prog -h ')
 
