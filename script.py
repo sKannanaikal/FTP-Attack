@@ -71,6 +71,8 @@ def main():
     command = optparse.OptionParser('usage%prog -h <target host>')
     command.add_option('-h', dest='target', type='string', help='specify the target of this specific attack')
 
+    host = command.target
+
     if loginWithAnonymous(host):
         ftpConnection = ftplib.FTP(host)
         ftpConnection.login('Anonymous', 'hellofrom@gmail.com')
